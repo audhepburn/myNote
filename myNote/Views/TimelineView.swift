@@ -47,6 +47,28 @@ struct TimelineView: View {
                             // Regular notes
                             ForEach(regularNotes, id: \.id) { note in
                                 NoteCell(note: note)
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                        Button(role: .destructive) {
+                                            modelContext.delete(note)
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+                                    }
+                                    .swipeActions(edge: .leading) {
+                                        Button {
+                                            note.isFavorite.toggle()
+                                        } label: {
+                                            Label(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star")
+                                        }
+                                        .tint(.yellow)
+
+                                        Button {
+                                            note.isPinned.toggle()
+                                        } label: {
+                                            Label(note.isPinned ? "Unpin" : "Pin", systemImage: note.isPinned ? "pin.slash" : "pin")
+                                        }
+                                        .tint(.blue)
+                                    }
                             }
                         }
                         .padding()
