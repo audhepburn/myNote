@@ -23,15 +23,9 @@ struct NoteCell: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         ForEach(note.images.sorted(by: { $0.orderIndex < $1.orderIndex }), id: \.id) { noteImage in
-                            AsyncImage(url: noteImage.thumbnailURL) { image in
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                            } placeholder: {
-                                ProgressView()
-                            }
-                            .frame(width: 80, height: 80)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            AsyncThumbnailView(noteImage: noteImage)
+                                .frame(width: 80, height: 80)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                     }
                 }
@@ -97,9 +91,35 @@ struct NoteCell: View {
     }
 }
 
-extension NoteImage {
-    var thumbnailURL: URL? {
-        URL(fileURLWithPath: imagePath)
+struct AsyncThumbnailView: View {
+    let noteImage: NoteImage
+    @State private var imageURL: URL?
+
+    var body: some View {
+        Group {
+            if let imageURL = imageURL {
+                AsyncImage(url: imageURL) { image in
+                    image
+                        .resizable()
+                        .scaledToFill()
+                } placeholder: {
+                    ProgressView()
+                }
+            } else {
+                Rectangle()
+                    .fill(.gray.opacity(0.2))
+                    .overlay {
+                        ProgressView()
+                    }
+            }
+        }
+        .task {
+            do {
+                imageURL = try await noteImage.thumbnailURL()
+            } catch {
+                print("Failed to load thumbnail: \(error)")
+            }
+        }
     }
 }
 
