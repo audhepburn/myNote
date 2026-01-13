@@ -14,4 +14,8 @@ final class NoteImage {
         self.orderIndex = orderIndex
         self.note = nil
     }
+
+    func thumbnailURL() async throws -> URL {
+        try await ImageManager.loadThumbnail(from: imagePath)
+    }
 }
