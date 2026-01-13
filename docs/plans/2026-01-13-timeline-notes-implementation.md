@@ -13,9 +13,7 @@
 ## Task 1: Create SwiftData Models Directory Structure
 
 **Files:**
-- Create: `myNote/Models/Note.swift`
-- Create: `myNote/Models/Tag.swift`
-- Create: `myNote/Models/NoteImage.swift`
+- Create directory: `myNote/Models/`
 
 **Step 1: Create Models directory**
 
@@ -266,12 +264,7 @@ git commit -m "feat: configure SwiftData container with all models"
 ## Task 6: Create Views Directory Structure
 
 **Files:**
-- Create: `myNote/Views/TimelineView.swift`
-- Create: `myNote/Views/NoteCell.swift`
-- Create: `myNote/Views/ComposeView.swift`
-- Create: `myNote/Views/TagsView.swift`
-- Create: `myNote/Views/StatsView.swift`
-- Create: `myNote/Views/SettingsView.swift`
+- Create directory: `myNote/Views/`
 
 **Step 1: Create Views directory**
 
@@ -1425,22 +1418,22 @@ struct ImageManager {
 
 extension UIImage {
     func aspectFitted(to size: CGSize) -> UIImage {
-        let scale = min(size.width / size.width, size.height / size.height)
-        let targetSize = CGSize(width: size.width * scale, height: size.height * scale)
+        let scale = min(size.width / self.size.width, size.height / self.size.height)
+        let targetSize = CGSize(width: self.size.width * scale, height: self.size.height * scale)
 
-        UIGraphicsImageRenderer(size: targetSize).image { _ in
+        return UIGraphicsImageRenderer(size: targetSize).image { _ in
             draw(in: CGRect(origin: .zero, size: targetSize))
         }
     }
 
     func aspectFilled(to size: CGSize) -> UIImage {
-        let scale = max(size.width / size.width, size.height / size.height)
-        let targetSize = CGSize(width: size.width * scale, height: size.height * scale)
+        let scale = max(size.width / self.size.width, size.height / self.size.height)
+        let targetSize = CGSize(width: self.size.width * scale, height: self.size.height * scale)
 
         let originX = (targetSize.width - size.width) / 2
         let originY = (targetSize.height - size.height) / 2
 
-        UIGraphicsImageRenderer(size: size).image { _ in
+        return UIGraphicsImageRenderer(size: size).image { _ in
             draw(in: CGRect(origin: CGPoint(x: -originX, y: -originY), size: targetSize))
         }
     }
