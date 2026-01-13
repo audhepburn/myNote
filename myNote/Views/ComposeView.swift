@@ -72,26 +72,42 @@ struct ComposeView: View {
     }
 
     private func postNote() {
-        let note = Note(content: viewModel.content)
+        Task {
+            let note = Note(content: viewModel.content)
 
-        // Extract and add tags
-        let extractedTags = viewModel.extractTags(
-            from: viewModel.content,
-            availableTags: viewModel.allTags,
-            modelContext: modelContext
-        )
-        note.tags = Array(extractedTags)
+            // Extract and add tags
+            let extractedTags = viewModel.extractTags(
+                from: viewModel.content,
+                availableTags: viewModel.allTags,
+                modelContext: modelContext
+            )
+            note.tags = Array(extractedTags)
 
-        // Update tag use counts
-        for tag in extractedTags {
-            tag.useCount += 1
+            // Update tag use counts
+            for tag in extractedTags {
+                tag.useCount += 1
+            }
+
+            // Process images
+            for (index, item) in viewModel.selectedItems.enumerated() {
+                if let data = try? await item.loadTransferable(type: Data.self),
+                   let uiImage = UIImage(data: data),
+                   let imageData = uiImage.jpegData(compressionQuality: 1.0) {
+
+                    do {
+                        let imageURL = try ImageManager.saveImage(imageData)
+                        let noteImage = NoteImage(imagePath: imageURL.path, orderIndex: index)
+                        noteImage.note = note
+                        note.images.append(noteImage)
+                    } catch {
+                        print("Failed to save image: \(error)")
+                    }
+                }
+            }
+
+            modelContext.insert(note)
+            dismiss()
         }
-
-        // Save images (placeholder for now - full implementation in Task 13)
-        // TODO: Process selectedItems and save images
-
-        modelContext.insert(note)
-        dismiss()
     }
 }
 
