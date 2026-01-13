@@ -1,21 +1,28 @@
-//
-//  ContentView.swift
-//  myNote
-//
-//  Created by Jingyu Du on 2026/1/13.
-//
-
 import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, Opencode!")
+        TabView {
+            TimelineView()
+                .tabItem {
+                    Label("Timeline", systemImage: "timeline")
+                }
+
+            TagsView()
+                .tabItem {
+                    Label("Tags", systemImage: "tag")
+                }
+
+            StatsView()
+                .tabItem {
+                    Label("Stats", systemImage: "chart.bar")
+                }
+
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }
         }
-        .padding()
     }
 }
 
