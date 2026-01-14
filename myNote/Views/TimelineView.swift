@@ -69,10 +69,12 @@ struct TimelineView: View {
                                         }
                                         .tint(.blue)
                                     }
+                                    .contentShape(Rectangle())
                             }
                         }
                         .padding()
                     }
+                    .scrollContentBackground(.hidden)
                     .refreshable {
                         // Trigger refresh
                     }

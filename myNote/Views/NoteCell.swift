@@ -18,15 +18,18 @@ struct NoteCell: View {
                 .lineLimit(4)
                 .fixedSize(horizontal: false, vertical: true)
 
-            // Images (thumbnails)
+            // Images (grid layout)
             if !note.images.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(note.images.sorted(by: { $0.orderIndex < $1.orderIndex }), id: \.id) { noteImage in
-                            AsyncThumbnailView(noteImage: noteImage)
-                                .frame(width: 80, height: 80)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                        }
+                let columns = [
+                    GridItem(.flexible(), spacing: 8),
+                    GridItem(.flexible(), spacing: 8),
+                    GridItem(.flexible(), spacing: 8)
+                ]
+                LazyVGrid(columns: columns, spacing: 8) {
+                    ForEach(note.images.sorted(by: { $0.orderIndex < $1.orderIndex }), id: \.id) { noteImage in
+                        AsyncThumbnailView(noteImage: noteImage)
+                            .aspectRatio(1, contentMode: .fill)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                 }
             }
