@@ -18,4 +18,8 @@ final class NoteImage {
     func thumbnailURL() async throws -> URL {
         try await ImageManager.loadThumbnail(from: imagePath)
     }
+
+    func fullImageURL() async throws -> URL {
+        try await ImageManager.loadThumbnail(from: imagePath, size: CGSize(width: 1024, height: 1024))
+    }
 }
