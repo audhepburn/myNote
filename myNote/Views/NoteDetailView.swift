@@ -6,7 +6,6 @@ struct NoteDetailView: View {
     @Environment(\.dismiss) private var dismiss
     let note: Note
 
-    @Query private var allTags: [Tag]
     @State private var showingDeleteAlert = false
     @State private var selectedImage: NoteImage?
 
@@ -98,7 +97,11 @@ struct NoteDetailView: View {
 
         // Delete image files
         for noteImage in note.images {
-            try? ImageManager.deleteImage(at: noteImage.imagePath)
+            do {
+                try ImageManager.deleteImage(at: noteImage.imagePath)
+            } catch {
+                print("⚠️ Failed to delete image at \(noteImage.imagePath): \(error)")
+            }
         }
 
         // Delete note
@@ -189,6 +192,7 @@ struct ImageDetailView: View {
     let noteImage: NoteImage
     @Environment(\.dismiss) private var dismiss
     @State private var imageURL: URL?
+    @State private var imageLoadError: Error?
 
     var body: some View {
         NavigationStack {
@@ -200,6 +204,21 @@ struct ImageDetailView: View {
                             .scaledToFit()
                     } placeholder: {
                         ProgressView()
+                    }
+                } else if let error = imageLoadError {
+                    VStack(spacing: 12) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.largeTitle)
+                            .foregroundStyle(.orange)
+                        Text("Failed to load image")
+                            .font(.headline)
+                        Text(error.localizedDescription)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Button("Retry") {
+                            imageLoadError = nil
+                            loadImage()
+                        }
                     }
                 } else {
                     ProgressView()
@@ -215,11 +234,17 @@ struct ImageDetailView: View {
                 }
             }
             .task {
-                do {
-                    imageURL = try await noteImage.fullImageURL()
-                } catch {
-                    print("Failed to load image: \(error)")
-                }
+                loadImage()
+            }
+        }
+    }
+
+    private func loadImage() {
+        Task {
+            do {
+                imageURL = try await noteImage.fullImageURL()
+            } catch {
+                imageLoadError = error
             }
         }
     }
