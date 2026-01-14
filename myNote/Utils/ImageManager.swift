@@ -41,9 +41,11 @@ struct ImageManager {
         return fileURL
     }
 
-    static func deleteImage(at path: String) {
-        let fm = FileManager.default
-        try? fm.removeItem(atPath: path)
+    static func deleteImage(at path: String) throws {
+        let fileManager = FileManager.default
+        if fileManager.fileExists(atPath: path) {
+            try fileManager.removeItem(atPath: path)
+        }
     }
 
     static func loadThumbnail(from path: String, size: CGSize = CGSize(width: 160, height: 160)) async throws -> URL {
