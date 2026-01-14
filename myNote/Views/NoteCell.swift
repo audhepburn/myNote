@@ -66,12 +66,6 @@ struct NoteCell: View {
                 }
 
                 Spacer()
-
-                Button {
-                    deleteNote()
-                } label: {
-                    Image(systemName: "trash")
-                }
             }
             .font(.caption)
             .foregroundStyle(.secondary)
@@ -87,10 +81,6 @@ struct NoteCell: View {
 
     private func togglePin() {
         note.isPinned.toggle()
-    }
-
-    private func deleteNote() {
-        modelContext.delete(note)
     }
 }
 
