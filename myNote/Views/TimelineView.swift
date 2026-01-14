@@ -34,7 +34,10 @@ struct TimelineView: View {
                             if !pinnedNotes.isEmpty {
                                 Section {
                                     ForEach(pinnedNotes, id: \.id) { note in
-                                        NoteCell(note: note)
+                                        NavigationLink(destination: NoteDetailView(note: note)) {
+                                            NoteCell(note: note)
+                                        }
+                                        .buttonStyle(.plain)
                                     }
                                 } header: {
                                     Text("Pinned")
@@ -46,30 +49,26 @@ struct TimelineView: View {
 
                             // Regular notes
                             ForEach(regularNotes, id: \.id) { note in
-                                NoteCell(note: note)
-                                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                        Button(role: .destructive) {
-                                            modelContext.delete(note)
-                                        } label: {
-                                            Label("Delete", systemImage: "trash")
-                                        }
+                                NavigationLink(destination: NoteDetailView(note: note)) {
+                                    NoteCell(note: note)
+                                }
+                                .buttonStyle(.plain)
+                                .swipeActions(edge: .leading) {
+                                    Button {
+                                        note.isFavorite.toggle()
+                                    } label: {
+                                        Label(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star")
                                     }
-                                    .swipeActions(edge: .leading) {
-                                        Button {
-                                            note.isFavorite.toggle()
-                                        } label: {
-                                            Label(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star")
-                                        }
-                                        .tint(.yellow)
+                                    .tint(.yellow)
 
-                                        Button {
-                                            note.isPinned.toggle()
-                                        } label: {
-                                            Label(note.isPinned ? "Unpin" : "Pin", systemImage: note.isPinned ? "pin.slash" : "pin")
-                                        }
-                                        .tint(.blue)
+                                    Button {
+                                        note.isPinned.toggle()
+                                    } label: {
+                                        Label(note.isPinned ? "Unpin" : "Pin", systemImage: note.isPinned ? "pin.slash" : "pin")
                                     }
-                                    .contentShape(Rectangle())
+                                    .tint(.blue)
+                                }
+                                .contentShape(Rectangle())
                             }
                         }
                         .padding()
